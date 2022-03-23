@@ -64,7 +64,7 @@ class icp_GN():
         self.ax.set_xlabel('x')
         self.ax.set_ylabel('y')
         self.ax.set_zlabel('z')
-        self.ax.set_title("point-to-%s"%(mode))
+        self.ax.set_title("point-to-{}-GN".format(mode))
         utils.axisEqual3D(self.ax)
         self.static = self.ax.scatter(self.staticPointCloud[0,:], self.staticPointCloud[1,:], self.staticPointCloud[2,:], marker='.',color = "blue")
         self.ax.scatter(self.dynamicPointCloud[0,:], self.dynamicPointCloud[1,:], self.dynamicPointCloud[2,:], marker='.', color = "red")
@@ -91,7 +91,7 @@ class icp_GN():
                     iter +=1
             else:
                 self.func = FuncAnimation(self.fig, self.update_point_to_point, frames = self.maxIterations, interval = 1, repeat = False)
-                #plt.show()
+                plt.show()
                 
         if mode == "plane":
             if not animate:
@@ -101,7 +101,7 @@ class icp_GN():
                     iter +=1
             else:
                 self.func = FuncAnimation(self.fig, self.update_point_to_plane, frames = self.maxIterations, interval = 1, repeat = False)
-                #plt.show()
+                plt.show()
   
     def get_correspondences(self):
         #sample
@@ -135,9 +135,8 @@ class icp_GN():
             e = (Rot_p + trans).reshape(3) - x
             
             J = self.Jacobian_point(Rot_p)
-            J_t = J.transpose(1,0)
-            H += J_t@J 
-            b += J_t@(e.reshape(3,1))
+            H += J.T@J 
+            b += J.T@(e.reshape(3,1))
             chi += np.linalg.norm(e)
             
             #print(i, e)
@@ -181,9 +180,8 @@ class icp_GN():
             Rot_p = Rot@p
             e = (Rot_p.reshape(3) + trans - x).dot(n)
             J = self.Jacobian_plane(Rot_p, n)
-            J_t = J.transpose(1,0)
-            H += J_t@J 
-            b += J_t*e
+            H += J.T@J 
+            b += J.T*e
             chi += np.linalg.norm(e)
             
             #f = p[:,i] + e*n[:,i].reshape(3) #2*normal.reshape(3) #
@@ -229,7 +227,6 @@ class icp_GN():
         return J
     
     def rotToEuler(self, R, t):
-        #print("t", t)
         x,y,z = t[0,0], t[1,0], t[2,0]
         cs = np.linalg.norm(R[:2,0])
         if cs < 1e-16:

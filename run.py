@@ -22,5 +22,5 @@ scene.points = o3d.utility.Vector3dVector(scene.points - np.mean(scene.points, a
 scene.points = o3d.utility.Vector3dVector(utils.Rot3D(np.asarray(scene.points), -30, 20, 0, 10, 0, 0))
 
 #args: grid_size, distance threshold, iterations, error mode, model, scene
-icp = icp_GN(4, 1, 20, "plane", False, model, scene)
+icp = icp_GN(4, 1, 20, "plane", True, model, scene)
 icp = icp_LM(4, 1, 20, "plane", True, model, scene)
